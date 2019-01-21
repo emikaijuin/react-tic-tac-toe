@@ -111,9 +111,7 @@ class App extends Component {
   // Helpers
   
   currentPositions = () => this.state[`${this.state.currentPlayer}_positions`]
-  
-  setMessage = message => document.getElementById('message').innerHTML = message
-  
+    
   markSquare = elem => elem.innerHTML = this.state.currentPlayer
   
   toggleCurrentPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"

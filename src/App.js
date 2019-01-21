@@ -118,6 +118,8 @@ class App extends Component {
   
   toggleCurrentPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"
 
+  // Render
+
   render() {
     return (
       <div className="App">

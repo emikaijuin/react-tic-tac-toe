@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 
 class App extends Component {
-
+  
   constructor(props) {
     super(props)
+
     this.state = {
       currentPlayer: "X",
       X_positions: [],
@@ -16,6 +17,8 @@ class App extends Component {
     }
   }
 
+  // Driver functions
+  
   play = e => {
     if (e.target.innerHTML) { return "Invalid move." }
     this.markSquare(e.target)
@@ -25,7 +28,7 @@ class App extends Component {
       draw: this.checkDraw()
     }, () => this.determineNext())
   }
-
+  
   determineNext = () => {
     let message
     if (this.state.win) {
@@ -40,11 +43,9 @@ class App extends Component {
     }
     this.setState({message: message})
   }
-
-  setMessage = message => document.getElementById('message').innerHTML = message
-
-  markSquare = elem => elem.innerHTML = this.state.currentPlayer
-
+  
+  // Continue Game Functions
+  
   updatePositions = (index) => {
     let currentPositions = this.currentPositions()
     let updatedPositionState = {}
@@ -53,9 +54,22 @@ class App extends Component {
     
     return updatedPositionState
   }
-
-  toggleCurrentPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"
-
+  
+  // Check if and how game is over
+  
+  winningPositions() {
+    return [
+      [0,1,2],
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [2,4,6]
+    ]
+  }
+  
   checkWin = () => {
     let win = false
     this.winningPositions().forEach(winPos => {
@@ -69,29 +83,16 @@ class App extends Component {
     })
     return win
   }
-
+  
   checkDraw = () => {
     if ([...this.state.X_positions, ...this.state.O_positions].length === 9 && !this.state.win) {
       return true
     } 
     return false
   }
-
-  currentPositions = () => this.state[`${this.state.currentPlayer}_positions`]
-
-  winningPositions() {
-    return [
-      [0,1,2],
-      [3,4,5],
-      [6,7,8],
-      [0,3,6],
-      [1,4,7],
-      [2,5,8],
-      [0,4,8],
-      [2,4,6]
-    ]
-  }
-
+  
+  // New Game
+  
   resetGame = () => {
     Array.from(document.querySelector('.board').children).forEach(elem => {
       elem.innerHTML = ""
@@ -106,6 +107,16 @@ class App extends Component {
       canReset: false
     })
   }
+  
+  // Helpers
+  
+  currentPositions = () => this.state[`${this.state.currentPlayer}_positions`]
+  
+  setMessage = message => document.getElementById('message').innerHTML = message
+  
+  markSquare = elem => elem.innerHTML = this.state.currentPlayer
+  
+  toggleCurrentPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"
 
   render() {
     return (

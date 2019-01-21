@@ -23,10 +23,10 @@ class App extends Component {
     this.setState({
       win: this.checkWin(),
       draw: this.checkDraw()
-    }, () => this.next())
+    }, () => this.determineNext())
   }
 
-  next = () => {
+  determineNext = () => {
     let message
     if (this.state.win) {
       message = `Congratulations, player ${this.state.currentPlayer} won!`

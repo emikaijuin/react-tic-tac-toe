@@ -56,17 +56,15 @@ class App extends Component {
         this.previousPositions().includes(winPos[0]) && 
         this.previousPositions().includes(winPos[1]) && 
         this.previousPositions().includes(winPos[2])
-      ) {
-        win = true
-      }
-    })
+      ) { win = true }
+    }) 
+    
     return win
   }
   
   checkDraw = () => {
-    if ([...this.state.X_positions, ...this.state.O_positions].length === 9 && !this.state.win) {
-      return true
-    } 
+    if ([...this.state.X_positions, ...this.state.O_positions].length === 9 
+          && !this.state.win) { return true } 
     return false
   }
   

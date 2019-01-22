@@ -9,50 +9,29 @@ class App extends Component {
     this.state = {
       currentPlayer: "X",
       X_positions: [],
-      O_positions: [],
-      win: false,
-      draw: false,
-      canReset: false,
-      message: "X's turn."
+      O_positions: []
     }
   }
 
   // Driver functions
   
-  play = e => {
+  handlePlayClick = e => {
     if (e.target.innerHTML) { return "Invalid move." }
-    this.markSquare(e.target)
-    this.updatePositions(parseInt(e.target.id))
-    this.setState({
-      win: this.checkWin(),
-      draw: this.checkDraw()
-    }, () => this.determineNext())
+    
+    let updatedState = {}
+    updatedState.currentPlayer = this.state.currentPlayer === "X" ? "O" : "X"
+    updatedState[`${this.state.currentPlayer}_positions`] = this.updatedPositions(parseInt(e.target.id))
+
+    this.setState(updatedState)
   }
-  
-  determineNext = () => {
-    let message
-    if (this.state.win) {
-      message = `Congratulations, player ${this.state.currentPlayer} won!`
-      this.setState({canReset: true})
-    } else if (this.state.draw) {
-      message = 'Game is a draw.'
-      this.setState({canReset: true})
-    } else {
-      this.setState({currentPlayer: this.toggleCurrentPlayer() })
-      message = `${this.state.currentPlayer == "X" ? "O" : "X"}'s turn.`
-    }
-    this.setState({message: message})
-  }
-  
+
   // Continue Game Functions
   
-  updatePositions = (index) => {
-    let currentPositions = this.currentPositions()
-    let updatedPositionState = {}
+  updatedPositions = (index) => {
+    let currentPositions = [...this.state[`${this.state.currentPlayer}_positions`]]
     currentPositions.push(index)
-    updatedPositionState[`${this.state.currentPlayer}_positions`] = currentPositions
-    
-    return updatedPositionState
+
+    return currentPositions
   }
   
   // Check if and how game is over
@@ -74,9 +53,9 @@ class App extends Component {
     let win = false
     this.winningPositions().forEach(winPos => {
       if ( 
-        this.currentPositions().includes(winPos[0]) && 
-        this.currentPositions().includes(winPos[1]) && 
-        this.currentPositions().includes(winPos[2])
+        this.previousPositions().includes(winPos[0]) && 
+        this.previousPositions().includes(winPos[1]) && 
+        this.previousPositions().includes(winPos[2])
       ) {
         win = true
       }
@@ -94,45 +73,59 @@ class App extends Component {
   // New Game
   
   resetGame = () => {
-    Array.from(document.querySelector('.board').children).forEach(elem => {
-      elem.innerHTML = ""
-    })
     this.setState({
       currentPlayer: "X",
       X_positions: [],
-      O_positions: [],
-      win: false,
-      draw: false,
-      message: `${this.state.currentPlayer}'s turn.`,
-      canReset: false
+      O_positions: []
     })
   }
   
   // Helpers
   
-  currentPositions = () => this.state[`${this.state.currentPlayer}_positions`]
+  previousPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"
+
+  previousPositions = () => this.state[`${this.previousPlayer()}_positions`]
     
-  markSquare = elem => elem.innerHTML = this.state.currentPlayer
-  
-  toggleCurrentPlayer = () => this.state.currentPlayer === "X" ? "O" : "X"
+  marker = index => {
+    if (this.state.X_positions.includes(index)) {
+      return "X"
+    } else if (this.state.O_positions.includes(index)) {
+      return "O"
+    } else {
+      return ""
+    }
+  }
 
   // Render
 
   render() {
+    let message
+    let canReset = true
+
+    if (this.checkWin()) {
+      message = `Congratulations, player ${this.previousPlayer()} won!`
+      canReset = false
+    } else if (this.checkDraw()) {
+      message = 'Game is a draw'
+      canReset = false
+    } else {
+      message = `${this.state.currentPlayer == "X" ? "O" : "X"}'s turn.`
+    }
+
     return (
       <div className="App">
-        <div id="message"> { this.state.message }</div>
-        <button disabled={ !this.state.canReset } onClick={this.resetGame}>Reset Game</button>
-        <div className="board" onClick={this.play}>
-          <div id="0" className="square"></div>
-          <div id="1" className="square"></div>
-          <div id="2" className="square"></div>
-          <div id="3" className="square"></div>
-          <div id="4" className="square"></div>
-          <div id="5" className="square"></div>
-          <div id="6" className="square"></div>
-          <div id="7" className="square"></div>
-          <div id="8" className="square"></div>
+        <div id="message"> { message }</div>
+        <button disabled={ canReset } onClick={this.resetGame}>Reset Game</button>
+        <div className="board" onClick={this.handlePlayClick}>
+          <div id="0" className="square">{ this.marker(0) }</div>
+          <div id="1" className="square">{ this.marker(1) }</div>
+          <div id="2" className="square">{ this.marker(2) }</div>
+          <div id="3" className="square">{ this.marker(3) }</div>
+          <div id="4" className="square">{ this.marker(4) }</div>
+          <div id="5" className="square">{ this.marker(5) }</div>
+          <div id="6" className="square">{ this.marker(6) }</div>
+          <div id="7" className="square">{ this.marker(7) }</div>
+          <div id="8" className="square">{ this.marker(8) }</div>
         </div>
       </div>
     );
